@@ -1,0 +1,7 @@
+intel.tar.part-*
+intel.tar.gz
+src/
+pkg/
+*.pkg.tar.zst
+*.log
+.SRCINFO
