@@ -1,7 +1,8 @@
-# Maintainer: cantosun99 <https://github.com/cantosun99>
+# Maintainer: cantosun99 <privat at cantosun dot de>
 pkgname=llama.cpp-sycl
+pkgver=r1.f08f20a
 pkgrel=1
-pkgdesc="llama.cpp built with Intel SYCL/oneAPI GPU acceleration (read README before use)"
+pkgdesc="llama.cpp with Intel Arc GPU acceleration via SYCL/oneAPI (bundled runtime, no separate oneAPI install required). Please read the README on GitHub before use."
 arch=('x86_64')
 url="https://github.com/cantosun99/llama.cpp-sycl"
 license=('MIT')
@@ -12,6 +13,14 @@ pkgver() {
     commit=$(git ls-remote https://github.com/ggml-org/llama.cpp HEAD | cut -c1-7)
     printf "r1.%s\n" "$commit"
 }
+conflicts=(
+    'llama.cpp'
+    'llama.cpp-vulkan'
+    'llama.cpp-cuda'
+    'llama.cpp-hip'
+    'llama.cpp-sycl-fp16'
+    'llama.cpp-sycl-fp32'
+)
 depends=(
     'intel-compute-runtime'
     'level-zero-loader'
@@ -37,6 +46,11 @@ sha256sums=(
     'bfb49f991a14dbb11c69618a332e0c5584e39dbc11bfc48f3cc47eb7f0965bcf'
     '8a9ac72795ea4c64a59c481458dd0248013337b8621698ad1ff704048542b015'
     '2dd7f0159c2f8f9601c3d4d372be3251a6d5c3b5379dba280e2b5249ed185dd4'
+)
+noextract=(
+    'intel.tar.part-aa'
+    'intel.tar.part-ab'
+    'intel.tar.part-ac'
 )
 
 prepare() {

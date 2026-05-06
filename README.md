@@ -12,6 +12,16 @@ Note that this is my first package, please have patience. I greatly appreciate a
 
 ---
 
+## Why SYCL and not Vulkan
+
+The AUR has `llama.cpp-vulkan`, which works on Arc GPUs, but SYCL is Intel's native compute stack, equivalent to what CUDA is to NVIDIA. A few concrete reasons to prefer this package:
+
+- Arc's XMX (Xe Matrix Extensions) units are Intel's equivalent of tensor cores. They are only accessible through SYCL/Level Zero, not through Vulkan compute. This is where the big throughput difference in LLM inference comes from.
+- SYCL/oneAPI uses Intel's own compiler (`icpx`) and runtime, which understands Arc's tile architecture directly. Vulkan compute on Arc is a generic path not optimized for Intel's hardware.
+- Intel actively develops and tests llama.cpp's SYCL backend. Vulkan on Intel is more of a community-maintained path.
+
+---
+
 ## What this does
 
 The PKGBUILD will:
@@ -69,13 +79,22 @@ Expected output:
 
 ```
 :: initializing oneAPI environment ...
-  bash: BASH_VERSION = 5.3.9(1)-release
+   bash: BASH_VERSION = 5.3.9(1)-release
+   args: Using "$@" for setvars.sh arguments: 
 :: ccl -- latest
 :: compiler -- latest
+:: debugger -- latest
+:: dev-utilities -- latest
 :: dnnl -- latest
+:: dpl -- latest
 :: mkl -- latest
+:: mpi -- latest
+:: pti -- latest
 :: tbb -- latest
+:: tcm -- latest
+:: umf -- latest
 :: oneAPI environment initialized ::
+
 ```
 
 ### 3. Verify the compiler
@@ -89,6 +108,10 @@ Expected output (version may differ):
 ```
 Intel(R) oneAPI DPC++/C++ Compiler 2026.0.0 (2026.0.0.20260331)
 Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/intel/oneapi/compiler/2026.0/bin/compiler
+Configuration file: /opt/intel/oneapi/compiler/2026.0/bin/compiler/../icpx.cfg
+
 ```
 
 ### 4. Verify your GPU is detected by SYCL
@@ -100,19 +123,21 @@ sycl-ls
 You should see at least one `level_zero:gpu` entry for your Intel GPU:
 
 ```
-[level_zero:gpu][level_zero:0] Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Graphics [0xe223]
+[level_zero:gpu][level_zero:0] Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Graphics [0xe223] 20.2.0 [1.15.37833]
+
 ```
 
 ### 5. Verify llama.cpp sees the GPU
 
 ```bash
-llama-cli --list-devices
+./build/bin/llama-cli --list-devices
 ```
 
 You should see your GPU listed as a SYCL device:
 
 ```
-SYCL0: Intel(R) Graphics [0xe223] (32656 MiB, 31808 MiB free)
+SYCL0: Intel(R) Graphics [0xe223] (32656 MiB, 31671 MiB free)
+
 ```
 
 If all steps above produce output similar to the examples, you're ready to go.
