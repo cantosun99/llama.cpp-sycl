@@ -130,7 +130,7 @@ You should see at least one `level_zero:gpu` entry for your Intel GPU:
 ### 5. Verify llama.cpp sees the GPU
 
 ```bash
-./build/bin/llama-cli --list-devices
+~/llama-cli --list-devices
 ```
 
 You should see your GPU listed as a SYCL device:
@@ -146,23 +146,18 @@ If all steps above produce output similar to the examples, you're ready to go.
 
 ## Daily usage
 
-Every time you want to run llama.cpp, you need to load the oneAPI environment first.
+Every time you want to run llama.cpp, you need to load the oneAPI environment first, not just copy-paste your llama-server command as you would with other builds.
 
-### Loading the oneAPI environment
+### Example: Loading the oneAPI environment and then running Qwen3.6 27B
 
 ```bash
 bash
 source /opt/intel/oneapi/setvars.sh
-```
-
-### Example: running Qwen3.6 27B
-
-```bash
-./build/bin/llama-server \
+~/llama-server \
   -m ~/Qwen3.6-27B-Q6_K.gguf \
   --device SYCL0 \
   -ngl 999 \
-  --ctx-size 100000 \
+  --ctx-size 131072 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --temp 0.6 \
