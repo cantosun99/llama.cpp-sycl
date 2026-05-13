@@ -16,9 +16,9 @@ Note that this is my first package, please have patience. I greatly appreciate a
 
 The AUR has `llama.cpp-vulkan`, which works on Arc GPUs, but SYCL is Intel's native compute stack, equivalent to what CUDA is to NVIDIA. A few concrete reasons to prefer this package:
 
-- Arc's XMX (Xe Matrix Extensions) units are Intel's equivalent of tensor cores. They are only accessible through SYCL/Level Zero, not through Vulkan compute. This is where the big throughput difference in LLM inference comes from.
-- SYCL/oneAPI uses Intel's own compiler (`icpx`) and runtime, which understands Arc's tile architecture directly. Vulkan compute on Arc is a generic path not optimized for Intel's hardware.
-- Intel actively develops and tests llama.cpp's SYCL backend. Vulkan on Intel is more of a community-maintained path.
+- Arc's XMX (Xe Matrix Extensions) units are Intel's equivalent of tensor cores. llama.cpp's SYCL backend explicitly targets them via oneDNN and Intel MKL. The Vulkan backend does not, which is where the throughput difference in LLM inference comes from.
+- SYCL/oneAPI uses Intel's own compiler (`icpx`) and runtime, which understands Arc's tile architecture directly. Vulkan compute on Arc goes through a generic cross-vendor path with no Arc-specific optimizations.
+- Intel actively develops and tests llama.cpp's SYCL backend upstream. Vulkan on Intel is more of a community-maintained path.
 
 ---
 
@@ -29,7 +29,9 @@ The PKGBUILD will:
 1. Download and extract a bundled oneAPI runtime to `/opt/intel/oneapi/`
 2. Clone [llama.cpp](https://github.com/ggml-org/llama.cpp) from source
 3. Build it with SYCL enabled using Intel's `icx`/`icpx` compilers
-4. Install all binaries to `/usr/bin/`
+4. Install shared libraries to `/opt/llama.cpp-sycl/lib/` with RPATH baked in, keeping them out of the global `/usr/lib` namespace
+5. Install binaries to `/opt/llama.cpp-sycl/bin/`
+6. Symlink all binaries into `/usr/bin/` so they are accessible system-wide without any environment setup
 
 The build runs on your machine so you always get the latest llama.cpp. The oneAPI bundle is the hard part to get on Arch, and that's what this package provides.
 
@@ -53,7 +55,7 @@ cd llama.cpp-sycl
 makepkg -si
 ```
 
-The build takes a while depending on your CPU. This is normal.
+The build takes a while depending on your CPU. This is normal. On my 245KF it takes about three minutes and is about 5.5 GB in total.
 
 ---
 
@@ -130,7 +132,7 @@ You should see at least one `level_zero:gpu` entry for your Intel GPU:
 ### 5. Verify llama.cpp sees the GPU
 
 ```bash
-~/llama-cli --list-devices
+/opt/llama.cpp-sycl/bin/llama-cli --list-devices
 ```
 
 You should see your GPU listed as a SYCL device:
@@ -153,10 +155,13 @@ Every time you want to run llama.cpp, you need to load the oneAPI environment fi
 ```bash
 bash
 source /opt/intel/oneapi/setvars.sh
-~/llama-server \
-  -m ~/Qwen3.6-27B-Q6_K.gguf \
+/opt/llama.cpp-sycl/bin/llama-server \
+  -m /path/to/your/model/Qwen3.6-27B-Q6_K.gguf \
   --device SYCL0 \
   -ngl 999 \
+  --no-mmap \
+  --flash-attn on \
+  --jinja \
   --ctx-size 131072 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
