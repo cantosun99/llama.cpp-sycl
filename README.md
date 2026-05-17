@@ -24,8 +24,6 @@ The AUR has `llama.cpp-vulkan`, which works on Arc GPUs, but SYCL is Intel's nat
 
 ## What this does
 
-## What this does
-
 The PKGBUILD will:
 
 1. Download the Intel Deep Learning Essentials and oneDNN installers directly from Intel (pinned to a specific version, updated manually per release)
