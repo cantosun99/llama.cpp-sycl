@@ -24,16 +24,17 @@ The AUR has `llama.cpp-vulkan`, which works on Arc GPUs, but SYCL is Intel's nat
 
 ## What this does
 
+## What this does
+
 The PKGBUILD will:
 
-1. Download and extract a bundled oneAPI runtime to `/opt/intel/oneapi/`
-2. Clone [llama.cpp](https://github.com/ggml-org/llama.cpp) from source
-3. Build it with SYCL enabled using Intel's `icx`/`icpx` compilers
-4. Install shared libraries to `/opt/llama.cpp-sycl/lib/` with RPATH baked in, keeping them out of the global `/usr/lib` namespace
-5. Install binaries to `/opt/llama.cpp-sycl/bin/`
-6. Symlink all binaries into `/usr/bin/` so they are accessible system-wide without any environment setup
-
-The build runs on your machine so you always get the latest llama.cpp. The oneAPI bundle is the hard part to get on Arch, and that's what this package provides.
+1. Download the Intel Deep Learning Essentials and oneDNN installers directly from Intel (pinned to a specific version, updated manually per release)
+2. Install the oneAPI toolchain temporarily during the build, then package it to `/opt/intel/oneapi/`
+3. Clone [llama.cpp](https://github.com/ggml-org/llama.cpp) from source (always builds against the latest HEAD)
+4. Build it with SYCL enabled using Intel's `icx`/`icpx` compilers
+5. Install shared libraries to `/opt/llama.cpp-sycl/lib/` with RPATH baked in, keeping them out of the global `/usr/lib` namespace
+6. Install binaries to `/opt/llama.cpp-sycl/bin/`
+7. Symlink all binaries into `/usr/bin/` so they are accessible system-wide without any environment setup
 
 ---
 
