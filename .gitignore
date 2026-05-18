@@ -1,7 +1,4 @@
-intel.tar.part-*
-intel.tar.gz
 src/
 pkg/
-*.pkg.tar.zst
-*.log
+*.pkg.tar.zst.log.sh
 .SRCINFO

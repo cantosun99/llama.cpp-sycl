@@ -28,7 +28,7 @@ The PKGBUILD will:
 
 1. Download the Intel Deep Learning Essentials and oneDNN installers directly from Intel (pinned to a specific version, updated manually per release)
 2. Install the oneAPI toolchain temporarily during the build, then package it to `/opt/intel/oneapi/`
-3. Clone [llama.cpp](https://github.com/ggml-org/llama.cpp) from source (always builds against the latest HEAD)
+3. Clone [llama.cpp](https://github.com/ggml-org/llama.cpp) from source
 4. Build it with SYCL enabled using Intel's `icx`/`icpx` compilers
 5. Install shared libraries to `/opt/llama.cpp-sycl/lib/` with RPATH baked in, keeping them out of the global `/usr/lib` namespace
 6. Install binaries to `/opt/llama.cpp-sycl/bin/`
