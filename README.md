@@ -12,6 +12,12 @@ Note that this is my first package, please have patience. I greatly appreciate a
 
 ---
 
+## Current news
+
+MTP doesn't seem to be supported yet on SYCL, I'll update you here if it does and change the suggested llama-server commands.
+
+---
+
 ## Why SYCL and not Vulkan
 
 The AUR has `llama.cpp-vulkan`, which works on Arc GPUs, but SYCL is Intel's native compute stack, equivalent to what CUDA is to NVIDIA. A few concrete reasons to prefer this package:
@@ -95,7 +101,6 @@ Expected output:
 :: tcm -- latest
 :: umf -- latest
 :: oneAPI environment initialized ::
-
 ```
 
 ### 3. Verify the compiler
@@ -125,7 +130,6 @@ You should see at least one `level_zero:gpu` entry for your Intel GPU:
 
 ```
 [level_zero:gpu][level_zero:0] Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Graphics [0xe223] 20.2.0 [1.15.37833]
-
 ```
 
 ### 5. Verify llama.cpp sees the GPU
@@ -138,7 +142,6 @@ You should see your GPU listed as a SYCL device:
 
 ```
 SYCL0: Intel(R) Graphics [0xe223] (32656 MiB, 31671 MiB free)
-
 ```
 
 If all steps above produce output similar to the examples, you're ready to go.
@@ -149,7 +152,7 @@ If all steps above produce output similar to the examples, you're ready to go.
 
 Every time you want to run llama.cpp, you need to load the oneAPI environment first, not just copy-paste your llama-server command as you would with other builds.
 
-### Example: Loading the oneAPI environment and then running Qwen3.6 27B
+### Example 1: Loading the oneAPI environment and then running Qwen3.6 27B for precise coding on a B70
 
 ```bash
 bash
@@ -172,10 +175,32 @@ source /opt/intel/oneapi/setvars.sh
   --port 8001
 ```
 
+### Examlple 2: Loading the oneAPI enviornment and then running Qwen3.6 35B-A3B Uncensored for fast and uncensored general tasks on a B70
+
+```bash
+bash
+source /opt/intel/oneapi/setvars.sh
+/home/c/llama.cpp/build/bin/llama-server \
+  -m /path/to/your/model/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf \
+  --device SYCL0 \
+  -ngl 999 \
+  --no-mmap \
+  --flash-attn on \
+  --jinja \
+  --ctx-size 65536 \
+  --cache-type-k q4_0 \
+  --cache-type-v q4_0 \
+  --temp 0.7 \
+  --top-p 0.8 \
+  --top-k 20 \
+  --min-p 0.00 \
+  --presence-penalty 1.5 \
+  --chat-template-kwargs '{"enable_thinking":false}' \
+  --port 8001
+```
+
 ---
 
 ## License
 
 PKGBUILD and packaging: MIT. llama.cpp: MIT. Intel oneAPI components are subject to Intel's license terms.
-
-If an Intel lawyer reads this, I'm new to this and just want to help improve the software situation of the Arc GPUs that I love so much. No harm intended.
