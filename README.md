@@ -14,17 +14,7 @@ Note that this is my first package, please have patience. I greatly appreciate a
 
 ## Current news
 
-MTP doesn't seem to be supported yet on SYCL, I'll update you here if it does and change the suggested llama-server commands.
-
----
-
-## Why SYCL and not Vulkan
-
-The AUR has `llama.cpp-vulkan`, which works on Arc GPUs, but SYCL is Intel's native compute stack, equivalent to what CUDA is to NVIDIA. A few concrete reasons to prefer this package:
-
-- Arc's XMX (Xe Matrix Extensions) units are Intel's equivalent of tensor cores. llama.cpp's SYCL backend explicitly targets them via oneDNN and Intel MKL. The Vulkan backend does not, which is where the throughput difference in LLM inference comes from.
-- SYCL/oneAPI uses Intel's own compiler (`icpx`) and runtime, which understands Arc's tile architecture directly. Vulkan compute on Arc goes through a generic cross-vendor path with no Arc-specific optimizations.
-- Intel actively develops and tests llama.cpp's SYCL backend upstream. Vulkan on Intel is more of a community-maintained path.
+Currently the Vulkan backend both supports MTP and with the [llama.cpp b9368 release](https://github.com/ggml-org/llama.cpp/releases/tag/b9368) also overtook SYCL in non-MTP speed. As long as Intel doesn't release a 2026.0.1 or 2026.1.0 version of oneAPI, I have to, in full transparancy, recommend you to use the llama.cpp-vulkan package on the AUR to use llama.cpp for your Intel GPUs on Arch.
 
 ---
 
