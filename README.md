@@ -52,6 +52,8 @@ makepkg -si
 
 The build takes a while depending on your CPU. This is normal. On my 245KF it takes about three minutes and is about 5.5 GB in total.
 
+For further information, you can visit the llama.cpp documentation of the SYCL backend https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/SYCL.md or the article by Intel https://www.intel.com/content/www/us/en/developer/articles/technical/run-llms-on-gpus-using-llama-cpp.html
+
 ---
 
 ## First-time setup
