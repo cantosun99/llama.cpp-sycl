@@ -14,7 +14,7 @@ Note that this is my first package, please have patience. I greatly appreciate a
 
 ## Current news
 
-Currently the Vulkan backend both supports MTP and with the [llama.cpp b9368 release](https://github.com/ggml-org/llama.cpp/releases/tag/b9368) also overtook SYCL in non-MTP speed. As long as Intel doesn't release a 2026.0.1 or 2026.1.0 version of oneAPI, I have to, in full transparancy, recommend you to use the llama.cpp-vulkan package on the AUR to use llama.cpp for your Intel GPUs on Arch.
+Currently the Vulkan backend both supports MTP and with the [llama.cpp b9368 release](https://github.com/ggml-org/llama.cpp/releases/tag/b9368) also overtook SYCL in non-MTP speed on not all but most LLMs. As long as Intel doesn't release a 2026.0.1 or 2026.1.0 version of oneAPI, I have to, in full transparancy, recommend you to use the llama.cpp-vulkan package on the AUR to for example run Qwen 3.6 27B with MTP, which gets close to 30t/s in token generation on my B70.
 
 ---
 
