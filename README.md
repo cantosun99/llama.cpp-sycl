@@ -152,7 +152,7 @@ source /opt/intel/oneapi/setvars.sh
 /opt/llama.cpp-sycl/bin/llama-server \
   -m /path/to/your/model/Qwen3.6-27B-Q6_K.gguf \
   --device SYCL0 \
-  -ngl 999 \
+  --n-gpu-layers 999 \
   --no-mmap \
   --flash-attn on \
   --jinja \
@@ -163,31 +163,27 @@ source /opt/intel/oneapi/setvars.sh
   --top-p 0.95 \
   --top-k 20 \
   --min-p 0.00 \
-  --presence-penalty 0.0 \
   --port 8001
 ```
 
-### Examlple 2: Loading the oneAPI enviornment and then running Qwen3.6 35B-A3B Uncensored for fast and uncensored general tasks on a B70
+### Examlple 2: Loading the oneAPI enviornment and then running Gemma 4 31B for writing on a B70
 
 ```bash
 bash
 source /opt/intel/oneapi/setvars.sh
 /home/c/llama.cpp/build/bin/llama-server \
-  -m /path/to/your/model/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf \
+  -m /path/to/your/model/gemma-4-31B-it-Q6_K.gguf \
   --device SYCL0 \
-  -ngl 999 \
+  --n-gpu-layers 999 \
   --no-mmap \
   --flash-attn on \
   --jinja \
   --ctx-size 65536 \
-  --cache-type-k q4_0 \
-  --cache-type-v q4_0 \
-  --temp 0.7 \
-  --top-p 0.8 \
-  --top-k 20 \
-  --min-p 0.00 \
-  --presence-penalty 1.5 \
-  --chat-template-kwargs '{"enable_thinking":false}' \
+  --cache-type-k q8_0 \
+  --cache-type-v q8_0 \
+  --temp 1 \
+  --top-p 0.95 \
+  --top-k 64 \
   --port 8001
 ```
 
