@@ -14,7 +14,11 @@ Note that this is my first package, please have patience. I greatly appreciate a
 
 ## Current news
 
-Currently the Vulkan backend both supports MTP and with the [llama.cpp b9368 release](https://github.com/ggml-org/llama.cpp/releases/tag/b9368) also overtook SYCL in non-MTP speed on not all but most LLMs. As long as Intel doesn't release a 2026.0.1 or 2026.1.0 version of oneAPI, I have to, in full transparancy, recommend you to use the llama.cpp-vulkan package on the AUR to for example run Qwen 3.6 27B with MTP, which gets close to 30t/s in token generation on my B70.
+Currently the Vulkan backend supports MTP while SYCL doesn't. For non-MTP models however, the SYCL backend is still usually faster than Vulkan.
+
+Personally I use the llama.cpp-vulkan package on the AUR to run Unsloth's Qwen 3.6 27B MTP Q6_K, which gets close to 30t/s in token generation on my B70 with --spec-draft-n-max 2.
+
+For other models that don't have MTP, like HauHauCS' Qwen 3.6 27B uncensored balanced Q6_K_P for cybersecurity tasks, I use this package since SYCL outperforms Vulkan.
 
 ---
 
@@ -50,7 +54,7 @@ cd llama.cpp-sycl
 makepkg -si
 ```
 
-The build takes a while depending on your CPU. This is normal. On my 245KF it takes about three minutes and is about 5.5 GB in total.
+The build takes a while depending on your CPU. This is normal. On my 270K it takes about two to three minutes and is about 5.5 GB in total.
 
 For further information, you can visit the llama.cpp documentation of the SYCL backend https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/SYCL.md or the article by Intel https://www.intel.com/content/www/us/en/developer/articles/technical/run-llms-on-gpus-using-llama-cpp.html
 
