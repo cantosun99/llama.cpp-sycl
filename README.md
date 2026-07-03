@@ -4,11 +4,9 @@ llama.cpp with Intel GPU acceleration, packaged for Arch Linux.
 
 Intel makes great GPUs. They also make it nearly impossible to use them on anything that isn't Ubuntu. The oneAPI toolchain comes with apt, zypper, and yum/dnf support, nothing for Arch. The AUR has the full `intel-oneapi-toolkit` package which is gigabytes of stuff you'll never use to actually run llama.cpp. If you want SYCL acceleration on Arch, you're basically on your own.
 
-This package fixes that. It builds llama.cpp on your machine with full SYCL support at close to 10 GB less than the full kit.
+This package fixes that. It builds llama.cpp on your machine with full SYCL support at close to *10 GB less than the full kit*.
 
-Tested on a **Sparkle Intel Arc Pro B70 passive** running **Unsloth's Qwen3.6 27B Q6_K** on **CachyOS running the Linux 7.0.3-1-cachyos kernel**.
-
-Note that this is my first package, please have patience. I greatly appreciate any help and hope to provide some value. You can contact me at privat@cantosun.de.
+Tested on a **Sparkle Intel Arc Pro B70 passive** using Unsloth's **Qwen3.6 27B Q6_K** on **Arch Linux x86_64** running the **Linux 7.1.2-3-cachyos** kernel.
 
 ---
 
@@ -54,7 +52,7 @@ cd llama.cpp-sycl
 makepkg -si
 ```
 
-The build takes a while depending on your CPU. This is normal. On my 270K it takes about two to three minutes and is about 5.5 GB in total.
+The build takes a while depending on your CPU. This is normal. On my 270K it takes about two to three minutes and is about 6.0 GB installed in total.
 
 For further information, you can visit the llama.cpp documentation of the SYCL backend https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/SYCL.md or the article by Intel https://www.intel.com/content/www/us/en/developer/articles/technical/run-llms-on-gpus-using-llama-cpp.html
 
