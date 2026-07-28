@@ -160,12 +160,18 @@ If all steps above produce output similar to the examples, you're ready to go.
 
 Every time you want to run llama.cpp, you need to load the oneAPI environment first, not just copy-paste your llama-server command as you would with other builds.
 
-### Example 1: Loading the oneAPI environment and then running Qwen3.6 27B for precise coding on a B70 *with* MTP
+In my opinion the model that currently makes the most sense to run on a single B70 is Qwen3.6-27B at Q6. With any variant of this version you can fit a KV-cache of 131072 into VRAM along with the model. Q8 might fit sometimes, but you literally have no context window, Q4 allows the full 252144 cache, but that's usually never needed so Q6 is the most sensible quant.
+
+Qwen3.6-35B-A3B does run well, even at Q8 with some offload to RAM, but 27B simply is the better model. The same goes for any of the Gemma 4 variants, they are honestly pretty useless in my experience. I haven't tried another model in the past months as nothing else has been able to compete with these.
+
+I used to run [Unsloth's Qwen3.6-27B-MTP-GGUF with MTP](https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/blob/main/Qwen3.6-27B-UD-Q6_K_XL.gguf) for months, but recently I have been using [this model with the worst name I have ever read](https://huggingface.co/DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF/blob/main/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf) and it's noticeably more efficient in reasoning and thus uses less tokens for better output.
+
+### Example: Loading the oneAPI environment and then running Qwen3.6-27B for precise coding on a single B70 with MTP
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
 /opt/llama.cpp-sycl/bin/llama-server \
-  -m /path/to/your/model/Qwen3.6-27B-Q6_K.gguf \
+  -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf \
   --device SYCL0 \
   --n-gpu-layers 999 \
   --no-mmap \
@@ -178,72 +184,21 @@ source /opt/intel/oneapi/setvars.sh
   --top-p 0.95 \
   --top-k 20 \
   --min-p 0.00 \
+  --presence-penalty 0.0 \
+  --repeat-penalty 1.0 \
   --spec-type draft-mtp \
   --spec-draft-n-max 2 \
   --port 8001
 ```
 
-### Example 2: Loading the oneAPI environment and then running Qwen3.6 27B for precise coding on a B70 *without* MTP
+### Setting a function in fish so you just have to type "qwen" in the terminal to launch you llama-server
 
-```bash
-source /opt/intel/oneapi/setvars.sh
-/opt/llama.cpp-sycl/bin/llama-server \
-  -m /path/to/your/model/Qwen3.6-27B-Q6_K.gguf \
-  --device SYCL0 \
-  --n-gpu-layers 999 \
-  --no-mmap \
-  --flash-attn on \
-  --jinja \
-  --ctx-size 131072 \
-  --cache-type-k q8_0 \
-  --cache-type-v q8_0 \
-  --temp 0.6 \
-  --top-p 0.95 \
-  --top-k 20 \
-  --min-p 0.00 \
-  --port 8001
+Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and paste the following in there, obviously with the correct path.
+
 ```
-
-### Examlple 3: Loading the oneAPI enviornment and then running Gemma 4 31B for writing on a B70 *with* MTP
-
-```bash
-source /opt/intel/oneapi/setvars.sh
-/home/c/llama.cpp/build/bin/llama-server \
-  -m /path/to/your/model/gemma-4-31B-it-Q6_K.gguf \
-  --device SYCL0 \
-  --n-gpu-layers 999 \
-  --no-mmap \
-  --flash-attn on \
-  --jinja \
-  --ctx-size 65536 \
-  --cache-type-k q8_0 \
-  --cache-type-v q8_0 \
-  --temp 1 \
-  --top-p 0.95 \
-  --top-k 64 \
-  --spec-type draft-mtp \
-  --spec-draft-n-max 2 \
-  --port 8001
-```
-
-### Examlple 4: Loading the oneAPI enviornment and then running Gemma 4 31B for writing on a B70 *without* MTP
-
-```bash
-source /opt/intel/oneapi/setvars.sh
-/home/c/llama.cpp/build/bin/llama-server \
-  -m /path/to/your/model/gemma-4-31B-it-Q6_K.gguf \
-  --device SYCL0 \
-  --n-gpu-layers 999 \
-  --no-mmap \
-  --flash-attn on \
-  --jinja \
-  --ctx-size 65536 \
-  --cache-type-k q8_0 \
-  --cache-type-v q8_0 \
-  --temp 1 \
-  --top-p 0.95 \
-  --top-k 64 \
-  --port 8001
+function qwen
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf --device SYCL0 --n-gpu-layers 999 --no-mmap --flash-attn on --jinja --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 8001"
+end
 ```
 
 ---
