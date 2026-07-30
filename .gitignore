@@ -1,4 +1,4 @@
 src/
 pkg/
-*.pkg.tar.zst.log.sh
+*.pkg.tar.zst.log.sh.txt
 .SRCINFO
