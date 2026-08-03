@@ -174,9 +174,10 @@ source /opt/intel/oneapi/setvars.sh
   -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf \
   --device SYCL0 \
   --n-gpu-layers 999 \
-  --no-mmap \
+  --load-mode none \
   --flash-attn on \
   --jinja \
+  --reasoning-preserve \
   --ctx-size 131072 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
@@ -197,7 +198,7 @@ Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and p
 
 ```
 function qwen
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf --device SYCL0 --n-gpu-layers 999 --no-mmap --flash-attn on --jinja --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 8001"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 8001"
 end
 ```
 
