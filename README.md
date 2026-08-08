@@ -12,7 +12,7 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 **Important: SYCL now supports MTP and beats llama.cpp-vulkan in PP by ~150 tok/s while only being ~1.5 tok/s slower in TG.**
 
-Also SYCL has gotten a new release on the 1st of July with the Intel Intel® Deep Learning Essentials now being on version 2026.1.0 and the Intel® Deep Neural Network Library on 2026.0.1 so I expect the future llama.cpp releases to further optimize the speed of the SYCL backend.
+Update: I reran the test on the 8th of August with my currently provided suggestion and it comes out to on average **700 tok/s PP** and 32 tok/s TG. There currently is no reason to use Vulkan if you have an Intel GPU.
 
 Benchmarks ran with **llama.cpp b9873** on a **Sparkle Intel Arc Pro B70 passive** using Unsloth's **Qwen3.6 27B Q6_K** on **Arch Linux x86_64** with the **Linux 7.1.2-3-cachyos** kernel.
 
