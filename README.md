@@ -10,20 +10,11 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current news
 
-**Important: SYCL now supports MTP and beats llama.cpp-vulkan in PP by ~150 tok/s while only being ~1.5 tok/s slower in TG.**
+**Since the AUR is currently blocking updates, you can simply run the pkgbuild provided here, I still update it daily.**
 
-Update: I reran the test on the 8th of August with my currently provided suggestion and it now hits peaks of **800 tok/s PP** and 35 tok/s TG. There currently is no reason to use Vulkan if you have an Intel GPU.
+SYCL now supports MTP and beats llama.cpp-vulkan with **TWICE** the PP while matching it in TG.
 
-Benchmarks ran with **llama.cpp b9873** on a **Sparkle Intel Arc Pro B70 passive** using Unsloth's **Qwen3.6 27B Q6_K** on **Arch Linux x86_64** with the **Linux 7.1.2-3-cachyos** kernel.
-
-Since llama-bench doesn't support MTP, I used my recommended daily-usage flags, warmed the model up with "Say hi." and then benchmarked it for prompt processing with "Read the following text and then only reply with "ok" once you have done so." followed by the German Wikipedia entry for Black Sabbath converted to text. For token generation I also warmed it up with "Say hi." and benchmarked it with "Write a complete Snake game in a single Python file. Output only the code, no explanations, no commentary. Include: arrow key controls, collision detection, food spawning, score display, and a game over screen. Make it actually runnable." with thinking off.
-
-| Backend | MTP | PP | TG |
-| --- | --- | --- | --- |
-| Vulkan | off | 317.32 tok/s | 16.92 tok/s |
-| Vulkan | on | 313.88 tok/s | 33.40 tok/s |
-| SYCL | off | 485.18 tok/s | 15.75 tok/s |
-| SYCL | on | 423.76 tok/s | 31.64 tok/s |
+With my currently provided suggestion it now hits peaks of **800 tok/s PP** and 35 tok/s TG with an average of 700-750 tok/s PP and 27.5-32.5 tok/s TG. There currently is no reason to use Vulkan if you have an Intel GPU.
 
 ---
 
