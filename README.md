@@ -10,9 +10,9 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current news
 
-(August 14th) **SYCL got a lot of love recently and currently gets peaks of 36 tok/s TG and 900 tok/s PP with Qwen3.6 27B which beats llama.cpp-vulkan by a long shot.**
+(August 14th, midnight) **I finally got done with a lot of testing and I have to say, Qwen3.8 27B is genuinely insane. Not one failed tool call, insanely time-consuming reasoning and very token-hungry, but in the end it's worth it because it perfectly one-shot most of the tasks. Updated my recommendations, off to bed now, have fun trying it out!**
 
-(August 14th) Qwen3.8 27B will be released today and I will do my best to test and validate it to update my suggestions.
+(August 14th) **SYCL got a lot of love recently and currently gets peaks of 36 tok/s TG and 900 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.**
 
 (August 11th) The AUR is finally back again!
 
@@ -162,7 +162,7 @@ I used to run [Unsloth's Qwen3.6-27B-MTP-GGUF with MTP](https://huggingface.co/u
 ```bash
 source /opt/intel/oneapi/setvars.sh
 /opt/llama.cpp-sycl/bin/llama-server \
-  -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf \
+  --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf \
   --device SYCL0 \
   --n-gpu-layers 999 \
   --load-mode none \
@@ -172,7 +172,7 @@ source /opt/intel/oneapi/setvars.sh
   --ctx-size 131072 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
-  --temp 0.6 \
+  --temp 1.0 \
   --top-p 0.95 \
   --top-k 20 \
   --min-p 0.00 \
@@ -180,7 +180,7 @@ source /opt/intel/oneapi/setvars.sh
   --repeat-penalty 1.0 \
   --spec-type draft-mtp \
   --spec-draft-n-max 2 \
-  --port 8001
+  --port 9931
 ```
 
 ### Setting a function in fish so you just have to type "qwen" in the terminal to launch you llama-server
@@ -189,7 +189,7 @@ Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and p
 
 ```
 function qwen
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server -m /path/to/your/model/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 8001"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 9931"
 end
 ```
 
