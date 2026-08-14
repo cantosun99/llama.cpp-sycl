@@ -10,11 +10,11 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current news
 
-The AUR is finally back again!
+(August 14th) **SYCL got a lot of love recently and currently gets peaks of 36 tok/s TG and 900 tok/s PP with Qwen3.6 27B which beats llama.cpp-vulkan by a long shot.**
 
-**SYCL now supports MTP and beats llama.cpp-vulkan with **TWICE** the PP while matching it in TG.**
+(August 14th) Qwen3.8 27B will be released today and I will do my best to test and validate it to update my suggestions.
 
-With my currently provided suggestion it now hits peaks of **800 tok/s PP** and 35 tok/s TG with an average of 700-750 tok/s PP and 27.5-32.5 tok/s TG. There currently is no reason to use Vulkan if you have an Intel GPU.
+(August 11th) The AUR is finally back again!
 
 ---
 
