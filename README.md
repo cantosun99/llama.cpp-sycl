@@ -10,6 +10,8 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current news
 
+(August 15th) UD-Q6_K_XL fits a context of 131072 with barely 300MB VRAM breathing room into a B70, Q6_K leaves 3GB. UD-5_K_XL can be used if you need the full 262144 context, anything below 6-bit is usually not acceptable quality in my opinion, you have to work with what you have tho. Considering UD-Q5_K_XL fits full Q8_0 context, I consider this to be the smallest sensible quant and because Q8_0 already eats up 29GB, I don't see any point in a quant higher than UD-Q6_K_XL. I'm still debating on wether I want to use/recommend Q6_K with a little more than 131k context or UD-Q6_K_XL with a little less than 131k context as the default.
+
 (August 14th, midnight) **I finally got done with a lot of testing and I have to say, Qwen3.8 27B is genuinely insane. Not one failed tool call, insanely time-consuming reasoning and very token-hungry, but in the end it's worth it because it perfectly one-shot most of the tasks. Updated my recommendations, off to bed now, have fun trying it out!**
 
 (August 14th) **SYCL got a lot of love recently and currently gets peaks of 36 tok/s TG and 900 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.**
