@@ -10,7 +10,7 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current news
 
-(August 15th) UD-Q6_K_XL fits a context of 131072 with barely 300MB VRAM breathing room into a B70, Q6_K leaves 3GB. UD-5_K_XL can be used if you need the full 262144 context, anything below 6-bit is usually not acceptable quality in my opinion, you have to work with what you have tho. Considering UD-Q5_K_XL fits full Q8_0 context, I consider this to be the smallest sensible quant and because Q8_0 already eats up 29GB, I don't see any point in a quant higher than UD-Q6_K_XL. I'm still debating on wether I want to use/recommend Q6_K with a little more than 131k context or UD-Q6_K_XL with a little less than 131k context as the default.
+(August 15th) UD-Q6_K_XL fits a context of 131072 with barely 300MB VRAM breathing room into a B70, Q6_K leaves 3GB. UD-5_K_XL can be used if you need the full 262144 context, anything below 6-bit is usually not acceptable quality in my opinion, you have to work with what you have tho. Considering UD-Q5_K_XL fits full Q8_0 context, I consider this to be the smallest sensible quant and because Q8_0 already eats up 29GB with barely any room left for context, I don't see any point in a quant higher than UD-Q6_K_XL.
 
 (August 14th, midnight) **I finally got done with a lot of testing and I have to say, Qwen3.8 27B is genuinely insane. Not one failed tool call, insanely time-consuming reasoning and very token-hungry, but in the end it's worth it because it perfectly one-shot most of the tasks. Updated my recommendations, off to bed now, have fun trying it out!**
 
@@ -153,13 +153,14 @@ If all steps above produce output similar to the examples, you're ready to go.
 
 Every time you want to run llama.cpp, you need to load the oneAPI environment first, not just copy-paste your llama-server command as you would with other builds.
 
-In my opinion the model that currently makes the most sense to run on a single B70 is Qwen3.6-27B at Q6. With any variant of this version you can fit a KV-cache of 131072 into VRAM along with the model. Q8 might fit sometimes, but you literally have no context window, Q4 allows the full 252144 cache, but that's usually never needed so Q6 is the most sensible quant.
+In my opinion Qwen3.8-27B is the best model you can currently run and it's not even remotely close. Gemma 4 and Qwen3.6 are outdated, Muse Glimmer has the dumbest relase date I've heard in my life, you can't just launch an inferior model to Qwen3.6 in the same week that Qwen3.8 releases. There might be use-cases for Nemotron 3.5 Lightning, if you depend on fast and accurate tool calls for example.
 
-Qwen3.6-35B-A3B does run well, even at Q8 with some offload to RAM, but 27B simply is the better model. The same goes for any of the Gemma 4 variants, they are honestly pretty useless in my experience. I haven't tried another model in the past months as nothing else has been able to compete with these.
+[Unsloth's guide how to run Qwen3.8-27B](https://unsloth.ai/docs/models/qwen3.8)
+[Unslot's Hugging Face Repo for Qwen3.8-27B](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF)
 
-I used to run [Unsloth's Qwen3.6-27B-MTP-GGUF with MTP](https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF/blob/main/Qwen3.6-27B-UD-Q6_K_XL.gguf) for months, but recently I have been using [this model with the worst name I have ever read](https://huggingface.co/DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF/blob/main/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q6_K.gguf) and it's noticeably more efficient in reasoning and thus uses less tokens for better output.
+### Example: Loading the oneAPI environment and then running Qwen3.8-27B on a single B70 with MTP
 
-### Example: Loading the oneAPI environment and then running Qwen3.6-27B for precise coding on a single B70 with MTP
+Warning: tight fit with 300MB VRAM breathing room.
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
