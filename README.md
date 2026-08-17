@@ -8,13 +8,17 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ---
 
+## Current stats
+
+**SYCL got a lot of love recently and currently gets peaks of 37 tok/s TG and 900 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.**
+
+With my current recommendations, the averages are roughly 27 TG while the model is thinking, 33 TG actually outputting/writing, 650-700 PP, tested with a Sparkle Intel Arc Pro B70 at 275W, using the Linux 7.1.8-1-cachyos kernel.
+
 ## Current news
 
-(August 15th) UD-Q6_K_XL fits a context of 131072 with barely 300MB VRAM breathing room into a B70, Q6_K leaves 3GB. UD-5_K_XL can be used if you need the full 262144 context, anything below 6-bit is usually not acceptable quality in my opinion, you have to work with what you have tho. Considering UD-Q5_K_XL fits full Q8_0 context, I consider this to be the smallest sensible quant and because Q8_0 already eats up 29GB with barely any room left for context, I don't see any point in a quant higher than UD-Q6_K_XL.
+(August 17th) I finally setteled on running and recommending the UD-Q6_K_XL quant as the "standard" as I feel like it's definitely an improvement to Q6_K. A cache of 131072 _can_ be ran, if your desktop environment renders through your iGPU, but for the usage on a solo B70 with a few browser tabs and IDE open, I recommend a cache of 100000. You realistically almost never need more than that anyway and if you do, you should then drop a quant to for example UD-Q6_K_XL with the max 262144 cache. Being adamant about a 131072 cache and having to drop to Q6_K is not sensible in my opinion and will lead to worse results for 90% of your average use-cases.
 
 (August 14th, midnight) **I finally got done with a lot of testing and I have to say, Qwen3.8 27B is genuinely insane. Not one failed tool call, insanely time-consuming reasoning and very token-hungry, but in the end it's worth it because it perfectly one-shot most of the tasks. Updated my recommendations, off to bed now, have fun trying it out!**
-
-(August 14th) **SYCL got a lot of love recently and currently gets peaks of 36 tok/s TG and 900 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.**
 
 (August 11th) The AUR is finally back again!
 
@@ -160,8 +164,6 @@ In my opinion Qwen3.8-27B is the best model you can currently run and it's not e
 
 ### Example: Loading the oneAPI environment and then running Qwen3.8-27B on a single B70 with MTP
 
-Warning: tight fit with 300MB VRAM breathing room.
-
 ```bash
 source /opt/intel/oneapi/setvars.sh
 /opt/llama.cpp-sycl/bin/llama-server \
@@ -172,7 +174,7 @@ source /opt/intel/oneapi/setvars.sh
   --flash-attn on \
   --jinja \
   --reasoning-preserve \
-  --ctx-size 131072 \
+  --ctx-size 100000 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --temp 1.0 \
@@ -192,7 +194,7 @@ Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and p
 
 ```
 function qwen
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 9931"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 100000 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 9931"
 end
 ```
 
