@@ -16,7 +16,11 @@ With my current recommendations, the averages are roughly 27 TG while the model 
 
 ## Current news
 
-(August 17th) I finally setteled on running and recommending the UD-Q6_K_XL quant as the "standard" as I feel like it's definitely an improvement to Q6_K. A cache of 131072 _can_ be ran, if your desktop environment renders through your iGPU, but for the usage on a solo B70 with a few browser tabs and IDE open, I recommend a cache of 100000. You realistically almost never need more than that anyway and if you do, you should then drop a quant to for example UD-Q6_K_XL with the max 262144 cache. Being adamant about a 131072 cache and having to drop to Q6_K is not sensible in my opinion and will lead to worse results for 90% of your average use-cases.
+(August 20th) Unsloth released new Unsloth Dynamic v3.0 quants for Qwen3.8-27B which currently are my recommendation. If your gguf is older than August 19th, you should re-download it. I have updated the recommendations with two examples.
+
+Example 1: UD-Q6_K_XL, the highest quant you can run on a B70 for maximum quality with a small but usally sufficient context of 100000 tokens. Highest quality but still enough context to handle the xhigh reasoning for short tasks that require accuracy and attention to detail. This should be your "daily-driver" for 90% of tasks.
+
+Example 2: UD-Q4_K_XL, the highest quant you can run on a B70 that still allows you to use the full 262144 token context. Slightly reduced quality but a huge amount of context, ideal for tasks that don't require as much accuracy or intensive reasoning and instead work with a ton of data.
 
 (August 14th, midnight) **I finally got done with a lot of testing and I have to say, Qwen3.8 27B is genuinely insane. Not one failed tool call, insanely time-consuming reasoning and very token-hungry, but in the end it's worth it because it perfectly one-shot most of the tasks. Updated my recommendations, off to bed now, have fun trying it out!**
 
@@ -153,7 +157,7 @@ If all steps above produce output similar to the examples, you're ready to go.
 
 ---
 
-## Daily usage
+## Recommended usage
 
 Every time you want to run llama.cpp, you need to load the oneAPI environment first, not just copy-paste your llama-server command as you would with other builds.
 
@@ -162,7 +166,7 @@ In my opinion Qwen3.8-27B is the best model you can currently run and it's not e
 [Unsloth's guide how to run Qwen3.8-27B](https://unsloth.ai/docs/models/qwen3.8)
 [Unslot's Hugging Face Repo for Qwen3.8-27B](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF)
 
-### Example: Loading the oneAPI environment and then running Qwen3.8-27B on a single B70 with MTP
+### Example 1: UD-Q6_K_XL, the highest quant you can run on a B70 for maximum quality with a small but usally sufficient context of 100000 tokens. Highest quality but still enough context to handle the xhigh reasoning for short tasks that require accuracy and attention to detail. This should be your "daily-driver" for 90% of tasks.
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
@@ -188,13 +192,58 @@ source /opt/intel/oneapi/setvars.sh
   --port 9931
 ```
 
-### Setting a function in fish so you just have to type "qwen" in the terminal to launch you llama-server
+At the point of loading, this will use 29.158 GB of VRAM.
+
+#### Setting a function in fish so you just have to type "qwen" in the terminal to launch you llama-server
 
 Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and paste the following in there, obviously with the correct path.
 
 ```
 function qwen
     bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 100000 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 9931"
+end
+```
+
+### Example 2: UD-Q4_K_XL, the highest quant you can run on a B70 that still allows you to use the full 262144 token context. Slightly reduced quality but a huge amount of context, ideal for tasks that don't require as much accuracy or intensive reasoning and instead work with a ton of data.
+
+Compared to example 1, which should be prefered for most of your tasks, this drops the quant from Q6 to Q4, increases the cache from 100000 to 262144 tokens, reduces the reasoning for xhigh to medium and ups the draft tokens from 2 to 3. The cache quant is still kept at Q8 as dropping the model to Q4 gives less of a reduction in quality than dropping the quant of the cache.
+
+Both of these are just examples from my experience, please do your own research and experimentation as it's both fun and rewarding to learn about this technology and adapt it to your own needs.
+
+```bash
+source /opt/intel/oneapi/setvars.sh
+/opt/llama.cpp-sycl/bin/llama-server \
+  --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf \
+  --device SYCL0 \
+  --n-gpu-layers 999 \
+  --load-mode none \
+  --flash-attn on \
+  --jinja \
+  --reasoning-preserve \
+  --ctx-size 100000 \
+  --cache-type-k q8_0 \
+  --cache-type-v q8_0 \
+  --temp 1.0 \
+  --top-p 0.95 \
+  --top-k 20 \
+  --min-p 0.00 \
+  --presence-penalty 0.0 \
+  --repeat-penalty 1.0 \
+  --chat-template-kwargs '{"reasoning_effort":"medium"}' \
+  --spec-type draft-mtp \
+  --spec-draft-n-max 3 \
+  --port 9931
+```
+
+At the point of loading, this will use 29.031 GB of VRAM.
+
+#### Setting a function in fish so you just have to type "qwenmaxctx" in the terminal to launch you llama-server
+
+Create a file called "/home/yourusername/.config/fish/functions/qwenmaxctx.fish" and paste the following in there, obviously with the correct path.
+
+```
+function qwenmaxctx
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 262144 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --chat-template-kwargs '{"reasoning_effort":"medium"}' --spec-type draft-mtp --spec-draft-n-max 3 --port 9931"
 end
 ```
 
