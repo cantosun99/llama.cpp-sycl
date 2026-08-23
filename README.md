@@ -10,9 +10,7 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current stats
 
-**SYCL got a lot of love recently and currently gets peaks of 37 tok/s TG and 900 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.**
-
-With my current recommendations, the averages are roughly 27 TG while the model is thinking, 33 TG actually outputting/writing, 650-700 PP, tested with a Sparkle Intel Arc Pro B70 at 275W, using the Linux 7.1.8-1-cachyos kernel.
+**SYCL got a lot of love recently and with my recommended settings it currently gets peaks of 37 tok/s TG and 1600 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.** Tested with a Sparkle Intel Arc Pro B70 at 275W, using the Linux 7.2.0-1-cachyos kernel.
 
 ## Current news
 
@@ -23,8 +21,6 @@ Example 1: UD-Q6_K_XL, the highest quant you can run on a B70 for maximum qualit
 Example 2: UD-Q4_K_XL, the highest quant you can run on a B70 that still allows you to use the full 262144 token context. Slightly reduced quality but a huge amount of context, ideal for tasks that don't require as much accuracy or intensive reasoning and instead work with a ton of data.
 
 (August 14th, midnight) **I finally got done with a lot of testing and I have to say, Qwen3.8 27B is genuinely insane. Not one failed tool call, insanely time-consuming reasoning and very token-hungry, but in the end it's worth it because it perfectly one-shot most of the tasks. Updated my recommendations, off to bed now, have fun trying it out!**
-
-(August 11th) The AUR is finally back again!
 
 ---
 
@@ -163,6 +159,10 @@ Every time you want to run llama.cpp, you need to load the oneAPI environment fi
 
 In my opinion Qwen3.8-27B is the best model you can currently run and it's not even remotely close. Gemma 4 and Qwen3.6 are outdated, Muse Glimmer has the dumbest relase date I've heard in my life, you can't just launch an inferior model to Qwen3.6 in the same week that Qwen3.8 releases. There might be use-cases for Nemotron 3.5 Lightning, if you depend on fast and accurate tool calls for example.
 
+**Both of these are just examples from my experience, please do your own research and experimentation as it's both fun and rewarding to learn about this technology and adapt it to your own needs.**
+
+For example with my Intel 270K I can set the threads flag to 24 but not everyone has that many cores. Maybe you prefer to use medium reasoning instead of the regular xhigh. Maybe you rely more, maybe you rely less on PP speed so you wanna adjust the batch and ubatch settings up for more VRAM use but faster PP or down for less VRAM use but slower PP. Maybe your tasks are likely what the model is trained on so you can set the draft tokens to 4, maybe you do more novel work and should keep it at 2. You are running Arch after all so please experiment!
+
 [Unsloth's guide how to run Qwen3.8-27B](https://unsloth.ai/docs/models/qwen3.8)
 [Unslot's Hugging Face Repo for Qwen3.8-27B](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF)
 
@@ -173,14 +173,16 @@ source /opt/intel/oneapi/setvars.sh
 /opt/llama.cpp-sycl/bin/llama-server \
   --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf \
   --device SYCL0 \
-  --n-gpu-layers 999 \
+  --threads 24 \
   --load-mode none \
   --flash-attn on \
   --jinja \
   --reasoning-preserve \
   --ctx-size 100000 \
   --cache-type-k q8_0 \
-  --cache-type-v q8_0 \
+  --cache-type-v q5_1 \
+  --batch-size 4096 \
+  --ubatch-size 2048 \
   --temp 1.0 \
   --top-p 0.95 \
   --top-k 20 \
@@ -189,10 +191,13 @@ source /opt/intel/oneapi/setvars.sh
   --repeat-penalty 1.0 \
   --spec-type draft-mtp \
   --spec-draft-n-max 2 \
+  --spec-draft-type-k q8_0 \
+  --spec-draft-type-v q8_0 \
+  --api-key llama.cpp-sycl \
   --port 9931
 ```
 
-At the point of loading, this will use 29.158 GB of VRAM.
+At the point of loading, this will use 29.629 GB of VRAM.
 
 #### Setting a function in fish so you just have to type "qwen" in the terminal to launch you llama-server
 
@@ -200,42 +205,42 @@ Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and p
 
 ```
 function qwen
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 100000 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --port 9931"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --threads 24 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 100000 --cache-type-k q8_0 --cache-type-v q5_1 --batch-size 4096 --ubatch-size 2048 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 --api-key llama.cpp-sycl --port 9931"
 end
 ```
 
 ### Example 2: UD-Q4_K_XL, the highest quant you can run on a B70 that still allows you to use the full 262144 token context. Slightly reduced quality but a huge amount of context, ideal for tasks that don't require as much accuracy or intensive reasoning and instead work with a ton of data.
-
-Compared to example 1, which should be prefered for most of your tasks, this drops the quant from Q6 to Q4, increases the cache from 100000 to 262144 tokens, reduces the reasoning for xhigh to medium and ups the draft tokens from 2 to 3. The cache quant is still kept at Q8 as dropping the model to Q4 gives less of a reduction in quality than dropping the quant of the cache.
-
-Both of these are just examples from my experience, please do your own research and experimentation as it's both fun and rewarding to learn about this technology and adapt it to your own needs.
 
 ```bash
 source /opt/intel/oneapi/setvars.sh
 /opt/llama.cpp-sycl/bin/llama-server \
   --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf \
   --device SYCL0 \
-  --n-gpu-layers 999 \
+  --threads 24 \
   --load-mode none \
   --flash-attn on \
   --jinja \
   --reasoning-preserve \
-  --ctx-size 100000 \
+  --ctx-size 262144 \
   --cache-type-k q8_0 \
-  --cache-type-v q8_0 \
+  --cache-type-v q5_1 \
+  --batch-size 4096 \
+  --ubatch-size 2048 \
   --temp 1.0 \
   --top-p 0.95 \
   --top-k 20 \
   --min-p 0.00 \
   --presence-penalty 0.0 \
   --repeat-penalty 1.0 \
-  --chat-template-kwargs '{"reasoning_effort":"medium"}' \
   --spec-type draft-mtp \
-  --spec-draft-n-max 3 \
+  --spec-draft-n-max 2 \
+  --spec-draft-type-k q8_0 \
+  --spec-draft-type-v q8_0 \
+  --api-key llama.cpp-sycl \
   --port 9931
 ```
 
-At the point of loading, this will use 29.031 GB of VRAM.
+At the point of loading, this will use 28.751 GB of VRAM.
 
 #### Setting a function in fish so you just have to type "qwenmaxctx" in the terminal to launch you llama-server
 
@@ -243,7 +248,7 @@ Create a file called "/home/yourusername/.config/fish/functions/qwenmaxctx.fish"
 
 ```
 function qwenmaxctx
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 262144 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --chat-template-kwargs '{\"reasoning_effort\":\"medium\"}' --spec-type draft-mtp --spec-draft-n-max 3 --port 9931"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --threads 24 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 262144 --cache-type-k q8_0 --cache-type-v q5_1 --batch-size 4096 --ubatch-size 2048 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 --api-key llama.cpp-sycl --port 9931"
 end
 ```
 
