@@ -10,7 +10,7 @@ This package fixes that. It builds llama.cpp on your machine with full SYCL supp
 
 ## Current stats
 
-**SYCL got a lot of love recently and with my recommended settings it currently gets peaks of 37 tok/s TG and 1600 tok/s PP with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.** Tested with a Sparkle Intel Arc Pro B70 at 275W, using the Linux 7.2.0-1-cachyos kernel.
+**SYCL got a lot of love recently and with my recommended settings it currently gets peaks of 37 tok/s TG and 2200 tok/s PP (with adjusted batch and ubatch) with Qwen3.8 27B which beats llama.cpp-vulkan by a long shot.** Tested with a Sparkle Intel Arc Pro B70 at 275W, using the Linux 7.2.0-1-cachyos kernel.
 
 ## Current news
 
@@ -161,7 +161,7 @@ In my opinion Qwen3.8-27B is the best model you can currently run and it's not e
 
 **Both of these are just examples from my experience, please do your own research and experimentation as it's both fun and rewarding to learn about this technology and adapt it to your own needs.**
 
-For example with my Intel 270K I can set the threads flag to 24 but not everyone has that many cores. Maybe you prefer to use medium reasoning instead of the regular xhigh. Maybe you rely more, maybe you rely less on PP speed so you wanna adjust the batch and ubatch settings up for more VRAM use but faster PP or down for less VRAM use but slower PP. Maybe your tasks are likely what the model is trained on so you can set the draft tokens to 4, maybe you do more novel work and should keep it at 2. You are running Arch after all so please experiment!
+For example with my Intel 270K I can set the threads flag to 24 but not everyone has that many cores. Maybe you prefer to use medium reasoning instead of the regular xhigh. Maybe you rely more, maybe you rely less on PP speed so you wanna adjust the batch and ubatch settings up to for example --batch-size 4096 and --ubatch-size 2048 and reduce the --ctx-size by around 30000-40000 for twice the PP speed but less available context. Maybe your tasks are likely what the model is trained on so you can set the draft tokens to 4, maybe you do more novel work and should keep it at 2. You are running Arch after all so please experiment!
 
 [Unsloth's guide how to run Qwen3.8-27B](https://unsloth.ai/docs/models/qwen3.8)
 [Unslot's Hugging Face Repo for Qwen3.8-27B](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF)
@@ -178,11 +178,9 @@ source /opt/intel/oneapi/setvars.sh
   --flash-attn on \
   --jinja \
   --reasoning-preserve \
-  --ctx-size 100000 \
+  --ctx-size 131000 \
   --cache-type-k q8_0 \
   --cache-type-v q5_1 \
-  --batch-size 4096 \
-  --ubatch-size 2048 \
   --temp 1.0 \
   --top-p 0.95 \
   --top-k 20 \
@@ -197,7 +195,7 @@ source /opt/intel/oneapi/setvars.sh
   --port 9931
 ```
 
-At the point of loading, this will use 29.629 GB of VRAM.
+At the point of loading, this will use 29.481 GB of VRAM.
 
 #### Setting a function in fish so you just have to type "qwen" in the terminal to launch you llama-server
 
@@ -224,8 +222,6 @@ source /opt/intel/oneapi/setvars.sh
   --ctx-size 262144 \
   --cache-type-k q8_0 \
   --cache-type-v q5_1 \
-  --batch-size 4096 \
-  --ubatch-size 2048 \
   --temp 1.0 \
   --top-p 0.95 \
   --top-k 20 \
@@ -240,7 +236,7 @@ source /opt/intel/oneapi/setvars.sh
   --port 9931
 ```
 
-At the point of loading, this will use 28.751 GB of VRAM.
+At the point of loading, this will use 26.652 GB of VRAM.
 
 #### Setting a function in fish so you just have to type "qwenmaxctx" in the terminal to launch you llama-server
 
