@@ -203,7 +203,7 @@ Create a file called "/home/yourusername/.config/fish/functions/qwen.fish" and p
 
 ```
 function qwen
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --threads 24 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 100000 --cache-type-k q8_0 --cache-type-v q5_1 --batch-size 4096 --ubatch-size 2048 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 --api-key llama.cpp-sycl --port 9931"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q6_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --threads 24 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 131000 --cache-type-k q8_0 --cache-type-v q5_1 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 --api-key llama.cpp-sycl --port 9931"
 end
 ```
 
@@ -244,7 +244,7 @@ Create a file called "/home/yourusername/.config/fish/functions/qwenmaxctx.fish"
 
 ```
 function qwenmaxctx
-    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --threads 24 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 262144 --cache-type-k q8_0 --cache-type-v q5_1 --batch-size 4096 --ubatch-size 2048 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 --api-key llama.cpp-sycl --port 9931"
+    bash -c "source /opt/intel/oneapi/setvars.sh && /opt/llama.cpp-sycl/bin/llama-server --model /path/to/your/model/Qwen3.8-27B-UD-Q4_K_XL.gguf --device SYCL0 --n-gpu-layers 999 --threads 24 --load-mode none --flash-attn on --jinja --reasoning-preserve --ctx-size 262144 --cache-type-k q8_0 --cache-type-v q5_1 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.00 --presence-penalty 0.0 --repeat-penalty 1.0 --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-type-k q8_0 --spec-draft-type-v q8_0 --api-key llama.cpp-sycl --port 9931"
 end
 ```
 
